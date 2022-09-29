@@ -1,10 +1,11 @@
 #include <iostream>
 #include <GL/glew.h>
 #include <GL/freeglut.h>
-
+#include "Mat4.h"
 
 GLuint p_id;
 GLint vertex_id = 0;
+GLuint matrix_model_id;
 
 float vertices2[] = {
         0, 0, 0,
@@ -83,6 +84,7 @@ static void CreateShaderProgram (char* vertexShaderFile, char* fragmentShaderFil
 
 void setup() {
     CreateShaderProgram("../VShader.vs", "../FShader.fs", p_id);
+    matrix_model_id = glGetUniformLocation(p_id, "matrix_model");
     glEnableClientState(GL_VERTEX_ARRAY);
     glEnable(GL_DEPTH_TEST);
     glBindAttribLocation(p_id, vertex_id, "aPos");
@@ -94,6 +96,25 @@ void Redisplay(void) {
     glUseProgram(p_id);
     glVertexAttribPointer(vertex_id, 3, GL_FLOAT, GL_FALSE, 0, vertices2);
     glEnableVertexAttribArray(vertex_id);
+
+    Mat4 matrix_model(1); // matriz identidad
+    Mat4 matrix_traslacion(0.5, 0.5, 0.3, 1);
+    matrix_model = matrix_model.multiplicacion( matrix_traslacion );
+    GLboolean transpose = GL_TRUE;
+    glUniformMatrix4fv(matrix_model_id, 1, transpose, matrix_model.mat);
+    glDrawElements(GL_TRIANGLES, 12, GL_UNSIGNED_INT, (const void *) indices2);
+
+
+    Mat4 matrix_model1(1); // matriz identidad
+    Mat4 matrix_traslacion1(-0.5, 0.5, -0.3, 1);
+    matrix_model = matrix_model1.multiplicacion( matrix_traslacion1 );
+    glUniformMatrix4fv(matrix_model_id, 1, transpose, matrix_model.mat);
+    glDrawElements(GL_TRIANGLES, 12, GL_UNSIGNED_INT, (const void *) indices2);
+
+    Mat4 matrix_model2(1); // matriz identidad
+    Mat4 matrix_traslacion2(-0.5, -0.5, 0.3, 1);
+    matrix_model = matrix_model2.multiplicacion( matrix_traslacion2 );
+    glUniformMatrix4fv(matrix_model_id, 1, transpose, matrix_model.mat);
     glDrawElements(GL_TRIANGLES, 12, GL_UNSIGNED_INT, (const void *) indices2);
 
 
@@ -118,5 +139,16 @@ int main(int argc, char* argv[]) {
 
     setup();
     glutMainLoop();
+    return 0;
+}
+
+int main2(){
+    Mat4 a(true);
+    a.print();
+    Mat4 matrix_escala(0.5, 0.3, 0.1, 0);
+    Mat4 matrix_traslacion(0.5, 0.3, 0.1, 1);
+    matrix_traslacion.print();
+    Mat4 mat_model = a.multiplicacion(matrix_traslacion);
+    mat_model.print();
     return 0;
 }
