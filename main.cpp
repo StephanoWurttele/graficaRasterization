@@ -83,7 +83,9 @@ static void CreateShaderProgram (char* vertexShaderFile, char* fragmentShaderFil
 }
 
 void setup() {
-    CreateShaderProgram("../VShader.vs", "../FShader.fs", p_id);
+    char vShader[] = "../VShader.vs";
+    char fShader[] = "../FShader.fs";
+    CreateShaderProgram(vShader, fShader, p_id);
     matrix_model_id = glGetUniformLocation(p_id, "matrix_model");
     glEnableClientState(GL_VERTEX_ARRAY);
     glEnable(GL_DEPTH_TEST);
@@ -99,7 +101,10 @@ void Redisplay(void) {
 
     Mat4 matrix_model(1); // matriz identidad
     Mat4 matrix_traslacion(0.5, 0.5, 0.3, 1);
-    matrix_model = matrix_model.multiplicacion( matrix_traslacion );
+    Mat4 matrix_rotacion(true);
+    matrix_rotacion.rotacion(90, Mat4::x);
+    matrix_model = matrix_model.multiplicacion(matrix_traslacion).multiplicacion(matrix_rotacion);
+
     GLboolean transpose = GL_TRUE;
     glUniformMatrix4fv(matrix_model_id, 1, transpose, matrix_model.mat);
     glDrawElements(GL_TRIANGLES, 12, GL_UNSIGNED_INT, (const void *) indices2);
@@ -108,6 +113,7 @@ void Redisplay(void) {
     Mat4 matrix_model1(1); // matriz identidad
     Mat4 matrix_traslacion1(-0.5, 0.5, -0.3, 1);
     matrix_model = matrix_model1.multiplicacion( matrix_traslacion1 );
+    matrix_model.print();
     glUniformMatrix4fv(matrix_model_id, 1, transpose, matrix_model.mat);
     glDrawElements(GL_TRIANGLES, 12, GL_UNSIGNED_INT, (const void *) indices2);
 
